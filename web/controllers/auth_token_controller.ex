@@ -8,6 +8,7 @@ defmodule Jot.AuthTokenController do
     {status, response} = case login(conn, params) do
       {:ok, user} ->
         {:created, %{
+          success: true,
           token: new_api_token(user),
           user: %{id: user.id, email: user.email}
         }}
@@ -23,14 +24,9 @@ defmodule Jot.AuthTokenController do
   end
 
   def delete(conn, _params) do
-    {token, claims} = current_token_and_claims(conn)
-    {status, response} = case Guardian.revoke!(token, claims) do
+    {status, response} = case logout(conn) do
       :ok ->
-        user = current_user(conn)
-        {:ok, %{
-          token: token,
-          user: %{id: user.id, email: user.email}
-        }}
+        {:ok, %{success: true}}
       {:error, reason} ->
         {:internal_server_error, %{error: reason}}
     end
@@ -53,6 +49,11 @@ defmodule Jot.AuthTokenController do
         dummy_checkpw()
         {:error, :not_found}
     end
+  end
+
+  defp logout(conn) do
+    {token, claims} = current_token_and_claims(conn)
+    Guardian.revoke!(token, claims)
   end
 
   defp new_api_token(user) do

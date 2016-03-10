@@ -40,4 +40,5 @@ config :guardian, Guardian,
   serializer: Jot.TokenSerializer
 
 config :guardian_db, GuardianDb,
-  repo: Jot.Repo
+  repo: Jot.Repo,
+  delete_revoked: false

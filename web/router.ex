@@ -23,5 +23,10 @@ defmodule Jot.Router do
 
     get "/", PageController, :public_page
     post "/login", AuthTokenController, :create
+
+    scope "/logout" do
+      pipe_through [:require_authentication]
+      delete "/", AuthTokenController, :delete
+    end
   end
 end

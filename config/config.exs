@@ -32,8 +32,12 @@ config :joken, config_module: Guardian.JWT
 
 # FIXME: per-environment secret_key!
 config :guardian, Guardian,
+  hooks: GuardianDb,
   issuer: "Jot",
   ttl: {30, :days},
   verify_issuer: true,
   secret_key: "lksdjowiurowieurlkjsdlwwer",
   serializer: Jot.TokenSerializer
+
+config :guardian_db, GuardianDb,
+  repo: Jot.Repo

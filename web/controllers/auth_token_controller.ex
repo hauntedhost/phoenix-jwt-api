@@ -5,25 +5,42 @@ defmodule Jot.AuthTokenController do
   alias Jot.User
 
   def create(conn, params = %{"email" => _, "password" => _}) do
-    case login(conn, params) do
+    {status, response} = case login(conn, params) do
       {:ok, user} ->
-        response = %{
-          jwt: new_api_token(user),
-          user: %{
-            id: user.id,
-            email: user.email
-          }
-        }
-        conn
-        |> put_status(:created)
-        |> json(response)
+        {:created, %{
+          token: new_api_token(user),
+          user: %{id: user.id, email: user.email}
+        }}
+      {:error, :token_storage_failure} ->
+        {:internal_server_error, %{error: "token_storage_failure"}}
       {:error, status} ->
-        response = %{error: status}
-        conn
-        |> put_status(status)
-        |> json(response)
+        {status, %{error: status}}
     end
+
+    conn
+    |> put_status(status)
+    |> json(response)
   end
+
+  def delete(conn, _params) do
+    {token, claims} = current_token_and_claims(conn)
+    {status, response} = case Guardian.revoke!(token, claims) do
+      :ok ->
+        user = current_user(conn)
+        {:ok, %{
+          token: token,
+          user: %{id: user.id, email: user.email}
+        }}
+      {:error, reason} ->
+        {:internal_server_error, %{error: reason}}
+    end
+
+    conn
+    |> put_status(status)
+    |> json(response)
+  end
+
+  # private
 
   defp login(conn, %{"email" => email, "password" => given_pass}) do
     user = Repo.get_by(User, email: email)
@@ -39,7 +56,17 @@ defmodule Jot.AuthTokenController do
   end
 
   defp new_api_token(user) do
-    {:ok, token, claims} = Guardian.encode_and_sign(user, :api)
+    {:ok, token, _claims} = Guardian.encode_and_sign(user, :api)
     token
+  end
+
+  defp current_user(conn) do
+    Guardian.Plug.current_resource(conn)
+  end
+
+  defp current_token_and_claims(conn) do
+    token = Guardian.Plug.current_token(conn)
+    {:ok, claims} = Guardian.Plug.claims(conn)
+    {token, claims}
   end
 end

@@ -1,26 +1,27 @@
 defmodule Jot.Router do
   use Jot.Web, :router
 
-  pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_flash
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
-  end
-
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/", Jot do
-    pipe_through :browser # Use the default browser stack
-
-    get "/", PageController, :index
+  pipeline :require_authentication do
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureAuthenticated, handler: Jot.AuthError
+    plug Jot.AuthSuccess
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Jot do
-  #   pipe_through :api
-  # end
+  scope "/api/secret", Jot do
+    pipe_through [:api, :require_authentication]
+
+    get "/", PageController, :secret_page
+  end
+
+  scope "/api", Jot do
+    pipe_through [:api]
+
+    get "/", PageController, :public_page
+    post "/login", AuthTokenController, :create
+  end
 end

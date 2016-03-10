@@ -27,3 +27,13 @@ import_config "#{Mix.env}.exs"
 config :phoenix, :generators,
   migration: true,
   binary_id: false
+
+config :joken, config_module: Guardian.JWT
+
+# FIXME: per-environment secret_key!
+config :guardian, Guardian,
+  issuer: "Jot",
+  ttl: {30, :days},
+  verify_issuer: true,
+  secret_key: "lksdjowiurowieurlkjsdlwwer",
+  serializer: Jot.TokenSerializer

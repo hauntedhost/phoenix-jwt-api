@@ -19,6 +19,12 @@ config :jot, Jot.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :jot, Jot.CorsPlug,
+  origin: [
+    "http://example.com",
+    "https://example.com"
+  ]
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

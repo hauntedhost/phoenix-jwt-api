@@ -3,11 +3,11 @@ defmodule Jot.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
   end
 
   pipeline :require_authentication do
-    plug Guardian.Plug.VerifyHeader
-    plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated, handler: Jot.AuthError
     plug Jot.AuthSuccess
   end

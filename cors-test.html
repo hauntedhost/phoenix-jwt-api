@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>cors test</title>
+    <style media="screen">
+      input {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding: 10px;
+        border-radius: 3px;
+        border: 1px solid #c9c9c9;
+      }
+
+      input[type="submit"] {
+        background: #ebebeb;
+        padding: 10px 20px;
+      }
+
+      input[type="submit"]:hover {
+        background: #dddddd;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <form data-get-private>
+      <h3>GET private route:</h3>
+      <input type="text" data-token placeholder="Auth Token">
+      <input type="submit" value="Test">
+    </form>
+
+    <form data-delete-logout>
+      <h3>DELETE token (logout):</h3>
+      <input type="text" data-token placeholder="Auth Token">
+      <input type="submit" value="Test">
+    </form>
+
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      $('[data-get-private]').submit(function(e) {
+        e.preventDefault();
+        var $form = $(e.target);
+        var token = $form.find('input[data-token]').val();
+
+        $.ajax({
+          type: 'GET',
+          url: 'http://localhost:4000/api/secret',
+          headers: {
+            'Authorization': token
+          }
+        }).done(function() {
+          console.log('success!')
+        }).fail(function() {
+          console.log('nope')
+        });
+      });
+
+      $('[data-delete-logout]').submit(function(e) {
+        e.preventDefault();
+        var $form = $(e.target);
+        var token = $form.find('input[data-token]').val();
+
+        $.ajax({
+          type: 'DELETE',
+          url: 'http://localhost:4000/api/logout',
+          headers: {
+            'Authorization': token
+          }
+        }).done(function() {
+          console.log('success!')
+        }).fail(function() {
+          console.log('nope')
+        });
+      });
+    </script>
+  </body>
+</html>

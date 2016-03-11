@@ -1,39 +1,32 @@
 defmodule Jot.Endpoint do
   use Phoenix.Endpoint, otp_app: :jot
 
-  socket "/socket", Jot.UserSocket
-
-  # Serve at "/" the static files from "priv/static" directory.
-  #
-  # You should set gzip to true if you are running phoenix.digest
-  # when deploying your static files in production.
+  # A plug for serving static assets from "priv/static" directory
   plug Plug.Static,
-    at: "/", from: :jot, gzip: false,
+    at: "/",
+    from: :jot,
+    gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
-  # Code reloading can be explicitly enabled under the
-  # :code_reloader configuration of your endpoint.
-  if code_reloading? do
-    socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
-    plug Phoenix.LiveReloader
-    plug Phoenix.CodeReloader
-  end
-
+  # A plug for generating a unique request id for each request
   plug Plug.RequestId
+
+  # A plug for logging basic request information
   plug Plug.Logger
 
+  # A plug for parsing the request body
   plug Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json],
-    pass: ["*/*"],
+    parsers: [:urlencoded, :multipart, :json], # modules to be invoked for parsing
+    pass: ["*/*"], # MIME type strings that are allowed
     json_decoder: Poison
 
-  plug Plug.MethodOverride
+  # A Plug to convert HEAD requests to GET requests.
   plug Plug.Head
 
-  plug Plug.Session,
-    store: :cookie,
-    key: "_jot_key",
-    signing_salt: "7cWY2XDx"
+  # A plug to add CORS
+  plug Jot.CorsPlug,
+    Application.get_env(:jot, Jot.CorsPlug, [])
 
+  # A DSL to define a routing algorithm that works with Plug
   plug Jot.Router
 end

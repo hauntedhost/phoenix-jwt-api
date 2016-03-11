@@ -11,8 +11,10 @@ config :jot, Jot.Endpoint,
   root: Path.dirname(__DIR__),
   secret_key_base: "lAfeYVqGqMjYULcrlW3G5i94LEwzyc2yUXV7+VfyBO3jMW/H0M/XZ9JxeKbkfZts",
   render_errors: [accepts: ~w(html json)],
-  pubsub: [name: Jot.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [
+    name: Jot.PubSub,
+    adapter: Phoenix.PubSub.PG2
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,

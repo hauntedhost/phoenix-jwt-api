@@ -41,7 +41,7 @@ config :jot, Jot.Repo,
   hostname: "localhost",
   pool_size: 10
 
-config :jot, Jot.CorsPlug,
+config :jot, CORSPlug,
   origin: [
     "http://localhost:8080",
     "https://localhost:8080"

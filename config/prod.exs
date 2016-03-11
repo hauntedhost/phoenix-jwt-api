@@ -19,7 +19,7 @@ config :jot, Jot.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :info
 
-config :jot, Jot.CorsPlug,
+config :jot, CORSPlug,
   origin: [
     "http://example.com",
     "https://example.com"

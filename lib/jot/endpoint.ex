@@ -24,8 +24,8 @@ defmodule Jot.Endpoint do
   plug Plug.Head
 
   # A plug to add CORS
-  plug Jot.CorsPlug,
-    Application.get_env(:jot, Jot.CorsPlug, [])
+  plug CORSPlug,
+    Application.get_env(:jot, CORSPlug, [])
 
   # A DSL to define a routing algorithm that works with Plug
   plug Jot.Router

@@ -42,6 +42,7 @@ defmodule Jot.Mixfile do
   defp deps do
     [
       {:comeonin, "~> 2.0"},
+      {:cors_plug, "~> 1.1.1"},
       {:cowboy, "~> 1.0"},
       {:gettext, "~> 0.9"},
       {:guardian, "~> 0.10"},

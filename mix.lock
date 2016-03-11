@@ -9,7 +9,6 @@
   "fs": {:hex, :fs, "0.9.2"},
   "gettext": {:hex, :gettext, "0.10.0"},
   "guardian": {:hex, :guardian, "0.10.1"},
-  "guardian_db": {:git, "https://github.com/somlor/guardian_db.git", "eab622230a05ef3fe0500f76aaf364930aa18101", [branch: "option-to-keep-revoked"]},
   "joken": {:hex, :joken, "1.1.0"},
   "jose": {:hex, :jose, "1.7.1"},
   "mariaex": {:hex, :mariaex, "0.7.0"},

@@ -9,7 +9,7 @@ defmodule Jot.AuthTokenController do
       {:ok, user} ->
         {:created, %{
           success: true,
-          token: new_api_token(user),
+          token: generate_user_token(user),
           user: %{id: user.id, email: user.email}
         }}
       {:error, :token_storage_failure} ->
@@ -56,18 +56,18 @@ defmodule Jot.AuthTokenController do
     Guardian.revoke!(token, claims)
   end
 
-  defp new_api_token(user) do
-    {:ok, token, _claims} = Guardian.encode_and_sign(user, :api)
+  defp generate_user_token(user) do
+    {:ok, token, _claims} = Guardian.encode_and_sign(user, :auth_token)
     token
-  end
-
-  defp current_user(conn) do
-    Guardian.Plug.current_resource(conn)
   end
 
   defp current_token_and_claims(conn) do
     token = Guardian.Plug.current_token(conn)
     {:ok, claims} = Guardian.Plug.claims(conn)
     {token, claims}
+  end
+
+  defp current_user(conn) do
+    Guardian.Plug.current_resource(conn)
   end
 end

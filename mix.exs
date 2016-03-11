@@ -45,7 +45,6 @@ defmodule Jot.Mixfile do
       {:cowboy, "~> 1.0"},
       {:gettext, "~> 0.9"},
       {:guardian, "~> 0.10"},
-      {:guardian_db, "~> 0.4", github: "somlor/guardian_db", branch: "option-to-keep-revoked"},
       {:joken, "~> 1.0"},
       {:mariaex, ">= 0.0.0"},
       {:phoenix, "~> 1.1.4"},

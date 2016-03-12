@@ -35,15 +35,14 @@
       // Step 1: Click a login button
       // This opens popup window to respective app's authorization page
 
-      var gitHubRedirectUri = 'http://localhost:8080/test-gh-oauth-callback.html';
-      var facebookRedirectUri = 'http://localhost:8080/test-fb-oauth-callback.html';
+      var redirectUri = 'http://localhost:8080/test-oauth-callback.html';
       var providers = {
         github: {
           url: 'https://github.com/login/oauth/authorize' +
             '?client_id=b03bc5ca34364a72bd75' +
             '&scope=user:email' +
-            '&redirect_uri=' + gitHubRedirectUri,
-          redirectUri: gitHubRedirectUri,
+            '&state=github' +
+            '&redirect_uri=' + redirectUri,
           windowOptions: [
             'toolbar=no',
             'location=no',
@@ -59,10 +58,10 @@
         facebook: {
           url: 'https://www.facebook.com/dialog/oauth' +
             '?client_id=115531665136705' +
-            '&redirect_uri=' + facebookRedirectUri +
+            '&redirect_uri=' + redirectUri +
+            '&state=facebook' +
             '&response_type=code' +
             '&scope=email',
-          redirectUri: facebookRedirectUri,
           windowOptions: [
             'toolbar=no',
             'location=no',
@@ -103,7 +102,7 @@
           url: providerUrl,
           data: {
             code: code,
-            redirect_uri: providers[provider].redirectUri
+            redirect_uri: redirectUri
           }
         }).done(function(response) {
           console.log('yeah!', response);

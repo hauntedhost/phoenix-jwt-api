@@ -7,13 +7,15 @@
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.17.1/URI.js"></script>
     <script type="text/javascript">
-      // Step 3: GitHub calls this page which passes code back to original window
+      // Step 3: oAuth provider calls this page which passes code back to original window
       var query = URI.parseQuery(window.location.search);
       var code = query.code;
+      var provider = query.state;
       var response = URI.buildQuery({
         code: code,
-        provider: 'github'
+        provider: provider
       });
+
       window.opener.postMessage(response, window.location);
       window.close();
     </script>

@@ -26,12 +26,12 @@ defmodule Jot.AuthToken do
     timestamps
   end
 
-  def login_changeset(user = %User{}, token, claims = %{}) do
+  def login_changeset(user_id, token, claims = %{}) do
     expires_at = Jot.Timestamp.to_ecto_datetime(claims["exp"])
     fields = claims
+    |> Map.put("user_id", user_id)
     |> Map.put("jwt", token)
     |> Map.put("claims", claims)
-    |> Map.put("user_id", user.id)
     |> Map.put("expires_at", expires_at)
 
     required_fields = ~w(jwt user_id jwt aud exp jti claims expires_at)

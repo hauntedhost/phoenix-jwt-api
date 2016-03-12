@@ -23,7 +23,7 @@ defmodule Jot.Router do
 
     get "/", PageController, :public_page
     post "/login", AuthController, :create
-    post "/github_oauth", AuthController, :github_oauth
+    post "/oauth/:provider", AuthController, :oauth
 
     scope "/logout" do
       pipe_through [:require_authentication]

@@ -36,11 +36,12 @@ defmodule Jot.AuthController do
     |> json(response)
   end
 
-  def github_oauth(conn, %{"code" => code}) do
+  # GitHub
+  def oauth(conn, %{"provider" => "github", "code" => code}) do
     # GET ACCESS TOKEN
-    github_auth_url = "https://github.com/login/oauth/access_token"
-    [client_id: client_id, client_secret: client_secret] = Application.get_env(:jot, Jot.GithubOAuth)
-    {:ok, %HTTPoison.Response{body: auth_body}} = HTTPoison.post(github_auth_url, {:form,
+    auth_url = "https://github.com/login/oauth/access_token"
+    [client_id: client_id, client_secret: client_secret] = Application.get_env(:jot, Jot.OAuth.GitHub)
+    {:ok, %HTTPoison.Response{body: auth_body}} = HTTPoison.post(auth_url, {:form,
       code: code,
       client_id: client_id,
       client_secret: client_secret
@@ -53,6 +54,36 @@ defmodule Jot.AuthController do
     # GET USER INFO
     {:ok, %HTTPoison.Response{body: user_body}} = HTTPoison.get("https://api.github.com/user", [
       Authorization: "token #{access_token}"
+    ])
+    {:ok, %{"email" => email}} = Poison.decode(user_body)
+
+    # TODO: FIND OR CREATE USER BY EMAIL
+    # find or create user by email (need to handle possibility of users with nil passwords)
+
+    # FIXME: do not return actual access_token
+    # return JWT or server-generated session key associated with user
+    json(conn, %{auth_token: access_token, email: email})
+  end
+
+  # Facebook
+  def oauth(conn, %{"provider" => "facebook", "code" => code, "redirect_uri" => redirect_uri}) do
+    # GET ACCESS TOKEN
+    auth_url = "https://graph.facebook.com/oauth/access_token"
+    [client_id: client_id, client_secret: client_secret] = Application.get_env(:jot, Jot.OAuth.Facebook)
+    {:ok, response = %HTTPoison.Response{body: auth_body}} =  HTTPoison.get(auth_url, [], params: %{
+      code: code,
+      client_id: client_id,
+      client_secret: client_secret,
+      redirect_uri: redirect_uri # required :/
+    })
+    %{"access_token" => access_token} = URI.decode_query(auth_body)
+
+    # TODO: can i possibly skip this second GET by querying for a user by their github access_token?
+    IO.inspect(access_token)
+
+    # GET USER INFO
+    {:ok, %HTTPoison.Response{body: user_body}} = HTTPoison.get("https://graph.facebook.com/me", [
+      Authorization: "OAuth #{access_token}"
     ])
     {:ok, %{"email" => email}} = Poison.decode(user_body)
 

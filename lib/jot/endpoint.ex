@@ -22,6 +22,11 @@ defmodule Jot.Endpoint do
     plug Phoenix.CodeReloader
   end
 
+  plug Plug.Session,
+    store: :cookie,
+    key: "_jot_key",
+    signing_salt: "7cWY2XDx"
+
   # A plug for parsing the request body
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json], # modules to be invoked for parsing

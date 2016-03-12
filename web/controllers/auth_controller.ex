@@ -5,35 +5,35 @@ defmodule Jot.AuthController do
   alias Jot.User
 
   def create(conn, params = %{"email" => _, "password" => _}) do
-    {status, response} = case login(conn, params) do
+    case login_by_email_and_pass(conn, params) do
       {:ok, user} ->
-        {:created, %{
+        response = %{
           success: true,
-          token: generate_user_token(user),
+          token: "no-worries",
           user: %{id: user.id, email: user.email}
-        }}
-      {:error, :token_storage_failure} ->
-        {:internal_server_error, %{error: "token_storage_failure"}}
-      {:error, status} ->
-        {status, %{error: status}}
-    end
+        }
+        conn
+        |> put_status(:created)
+        |> Guardian.Plug.sign_in(user)
+        |> json(response)
 
-    conn
-    |> put_status(status)
-    |> json(response)
+      {:error, :token_storage_failure} ->
+        conn
+        |> put_status(:error)
+        |> json(%{error: "token_storage_failure"})
+
+      {:error, status} ->
+        conn
+        |> put_status(status)
+        |> json(%{error: status})
+    end
   end
 
   def delete(conn, _params) do
-    {status, response} = case logout(conn) do
-      :ok ->
-        {:ok, %{success: true}}
-      {:error, reason} ->
-        {:internal_server_error, %{error: reason}}
-    end
-
     conn
-    |> put_status(status)
-    |> json(response)
+    |> Guardian.Plug.sign_out
+    |> put_status(:ok)
+    |> json(%{success: true})
   end
 
   # GitHub
@@ -97,7 +97,14 @@ defmodule Jot.AuthController do
 
   # private
 
-  defp login(conn, %{"email" => email, "password" => given_pass}) do
+  # NOTE: currently not used, this function can be used to generate a valid token
+  # for a client that cannot send tokens via session cookies
+  defp generate_user_token(user) do
+    {:ok, token, _claims} = Guardian.encode_and_sign(user)
+    token
+  end
+
+  defp login_by_email_and_pass(conn, %{"email" => email, "password" => given_pass}) do
     user = Repo.get_by(User, email: email)
     cond do
       user && checkpw(given_pass, user.password_hash) ->
@@ -108,25 +115,5 @@ defmodule Jot.AuthController do
         dummy_checkpw()
         {:error, :not_found}
     end
-  end
-
-  defp logout(conn) do
-    {token, claims} = current_token_and_claims(conn)
-    Guardian.revoke!(token, claims)
-  end
-
-  defp generate_user_token(user) do
-    {:ok, token, _claims} = Guardian.encode_and_sign(user, :auth_token)
-    token
-  end
-
-  defp current_token_and_claims(conn) do
-    token = Guardian.Plug.current_token(conn)
-    {:ok, claims} = Guardian.Plug.claims(conn)
-    {token, claims}
-  end
-
-  defp current_user(conn) do
-    Guardian.Plug.current_resource(conn)
   end
 end

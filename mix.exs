@@ -27,7 +27,8 @@ defmodule Jot.Mixfile do
         :gettext,
         :phoenix_ecto,
         :mariaex,
-        :comeonin
+        :comeonin,
+        :httpoison
       ]
     ]
   end
@@ -46,12 +47,13 @@ defmodule Jot.Mixfile do
       {:cowboy, "~> 1.0"},
       {:gettext, "~> 0.9"},
       {:guardian, "~> 0.10"},
+      {:httpoison, "~> 0.8"},
       {:joken, "~> 1.0"},
       {:mariaex, ">= 0.0.0"},
       {:phoenix, "~> 1.1.4"},
       {:phoenix_ecto, "~> 2.0"},
       {:phoenix_html, "~> 2.4"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
+      {:phoenix_live_reload, "~> 1.0", only: :dev}
     ]
   end
 

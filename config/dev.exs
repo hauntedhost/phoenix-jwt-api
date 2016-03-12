@@ -46,3 +46,5 @@ config :jot, CORSPlug,
     "http://localhost:8080",
     "https://localhost:8080"
   ]
+
+import_config "dev.secret.exs"

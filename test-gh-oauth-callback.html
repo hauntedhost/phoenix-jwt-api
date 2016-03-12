@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>github oauth callback</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      // Step 3: GitHub calls this page which passes code back to original window
+      var code = window.location.toString().replace(/.+code=/, '');
+      window.opener.postMessage(code, window.location);
+      window.close();
+    </script>
+  </body>
+</html>

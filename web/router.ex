@@ -22,11 +22,12 @@ defmodule Jot.Router do
     pipe_through [:api]
 
     get "/", PageController, :public_page
-    post "/login", AuthTokenController, :create
+    post "/login", AuthController, :create
+    post "/github_oauth", AuthController, :github_oauth
 
     scope "/logout" do
       pipe_through [:require_authentication]
-      delete "/", AuthTokenController, :delete
+      delete "/", AuthController, :delete
     end
   end
 end

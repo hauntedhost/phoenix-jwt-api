@@ -14,6 +14,14 @@ defmodule Jot.Endpoint do
   # A plug for logging basic request information
   plug Plug.Logger
 
+  # Code reloading can be explicitly enabled under the
+  # :code_reloader configuration of your endpoint.
+  if code_reloading? do
+    socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+    plug Phoenix.LiveReloader
+    plug Phoenix.CodeReloader
+  end
+
   # A plug for parsing the request body
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json], # modules to be invoked for parsing
